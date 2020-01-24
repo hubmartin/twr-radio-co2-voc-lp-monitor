@@ -36,7 +36,7 @@ bc_led_t led;
 // Button instance
 bc_button_t button;
 
-bc_tag_voc_t tag_voc;
+bc_tag_voc_lp_t tag_voc;
 event_param_t voc_event_param = { .next_pub = 0 };
 
 // Thermometer instance
@@ -185,20 +185,22 @@ void humidity_tag_event_handler(bc_tag_humidity_t *self, bc_tag_humidity_event_t
     }
 }
 
-void voc_tag_event_handler(bc_tag_voc_t *self, bc_tag_voc_event_t event, void *event_param)
+void voc_lp_tag_event_handler(bc_tag_voc_lp_t *self, bc_tag_voc_lp_event_t event, void *event_param)
 {
     event_param_t *param = (event_param_t *)event_param;
 
-    if (event == BC_TAG_VOC_EVENT_UPDATE)
+    if (event == BC_TAG_VOC_LP_EVENT_UPDATE)
     {
         uint16_t value;
 
-        if (bc_tag_voc_get_tvoc_ppb(&tag_voc, &value))
+        if (bc_tag_voc_lp_get_tvoc_ppb(&tag_voc, &value))
         {
-        if ((fabsf(value - param->value) >= VOC_TAG_PUB_VALUE_CHANGE) || (param->next_pub < bc_scheduler_get_spin_tick()))
-            param->value = value;
-            param->next_pub = bc_scheduler_get_spin_tick() + VOC_TAG_PUB_NO_CHANGE_INTERVAL;
-            bc_radio_pub_int("voc-sensor/0:0/tvoc", value);
+            if ((fabsf(value - param->value) >= VOC_TAG_PUB_VALUE_CHANGE) || (param->next_pub < bc_scheduler_get_spin_tick()))
+            {
+                param->value = value;
+                param->next_pub = bc_scheduler_get_spin_tick() + VOC_TAG_PUB_NO_CHANGE_INTERVAL;
+                bc_radio_pub_int("voc-sensor/0:0/tvoc", &value);
+            }
         }
     }
 
@@ -287,9 +289,9 @@ void application_init(void)
     // Initialize thermometer sensor on core module
     bc_tmp112_init(&tmp112, BC_I2C_I2C0, 0x49);
 
-    bc_tag_voc_init(&tag_voc, BC_I2C_I2C0);
-    bc_tag_voc_set_event_handler(&tag_voc, voc_tag_event_handler, &voc_event_param);
-    bc_tag_voc_set_update_interval(&tag_voc, VOC_TAG_UPDATE_INTERVAL);
+    bc_tag_voc_lp_init(&tag_voc, BC_I2C_I2C0);
+    bc_tag_voc_lp_set_event_handler(&tag_voc, voc_lp_tag_event_handler, &voc_event_param);
+    bc_tag_voc_lp_set_update_interval(&tag_voc, VOC_TAG_UPDATE_INTERVAL);
 
     // Initialize button
     bc_button_init(&button, BC_GPIO_BUTTON, BC_GPIO_PULL_DOWN, false);
