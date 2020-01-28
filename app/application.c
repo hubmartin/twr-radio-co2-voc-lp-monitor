@@ -182,6 +182,13 @@ void humidity_tag_event_handler(bc_tag_humidity_t *self, bc_tag_humidity_event_t
             param->value = value;
             param->next_pub = bc_scheduler_get_spin_tick() + HUMIDITY_TAG_PUB_NO_CHANGE_INTEVAL;
         }
+
+        // VOC compensation
+        float celsius;
+        if (bc_tag_temperature_get_temperature_celsius(&temperature, &celsius))
+        {
+            bc_tag_voc_lp_set_compensation(&tag_voc, &celsius, &value);
+        }
     }
 }
 
