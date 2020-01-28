@@ -199,11 +199,11 @@ void voc_lp_tag_event_handler(bc_tag_voc_lp_t *self, bc_tag_voc_lp_event_t event
             {
                 param->value = value;
                 param->next_pub = bc_scheduler_get_spin_tick() + VOC_TAG_PUB_NO_CHANGE_INTERVAL;
-                bc_radio_pub_int("voc-sensor/0:0/tvoc", &value);
+                int radio_tvoc = value;
+                bc_radio_pub_int("voc-lp-sensor/0:0/tvoc", &radio_tvoc);
             }
         }
     }
-
 }
 
 void barometer_tag_event_handler(bc_tag_barometer_t *self, bc_tag_barometer_event_t event, void *event_param)
