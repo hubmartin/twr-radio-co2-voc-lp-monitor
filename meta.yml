@@ -10,12 +10,12 @@ articles:
     images:
       - url: https://hackster.imgix.net/uploads/attachments/1050366/_TtbY6sZnSM.blob?auto=compress%2Cformat&w=900&h=675&fit=min
 assembly:
-  - name: BigClown CO2 Module
-  - name: BigClown Core Module
-  - name: BigClown Battery Module
-  - name: BigClown Temperature Tag
+  - name: HARDWARIO CO2 Module
+  - name: HARDWARIO Core Module
+  - name: HARDWARIO Battery Module
+  - name: HARDWARIO Temperature Tag
     optional: true
-  - name: BigClown Humidity Tag
+  - name: HARDWARIO Humidity Tag
     optional: true
-  - name: BigClown Barometer Tag
+  - name: HARDWARIO Barometer Tag
     optional: true
