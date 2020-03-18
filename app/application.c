@@ -3,9 +3,9 @@
 #define SERVICE_INTERVAL_INTERVAL (60 * 60 * 1000)
 #define BATTERY_UPDATE_INTERVAL (60 * 60 * 1000)
 
-#define VOC_TAG_UPDATE_INTERVAL (5 * 1000)
-#define VOC_TAG_PUB_VALUE_CHANGE 5.0f
-#define VOC_TAG_PUB_NO_CHANGE_INTERVAL (15 * 60 * 1000)
+#define VOC_LP_TAG_UPDATE_INTERVAL (5 * 1000)
+#define VOC_LP_TAG_PUB_VALUE_CHANGE 5.0f
+#define VOC_LP_TAG_PUB_NO_CHANGE_INTERVAL (15 * 60 * 1000)
 
 #define TEMPERATURE_TAG_PUB_NO_CHANGE_INTEVAL (15 * 60 * 1000)
 #define TEMPERATURE_TAG_PUB_VALUE_CHANGE 0.2f
@@ -36,8 +36,8 @@ bc_led_t led;
 // Button instance
 bc_button_t button;
 
-bc_tag_voc_lp_t tag_voc;
-event_param_t voc_event_param = { .next_pub = 0 };
+bc_tag_voc_lp_t tag_voc_lp;
+event_param_t voc_lp_event_param = { .next_pub = 0 };
 
 // Thermometer instance
 bc_tmp112_t tmp112;
@@ -187,7 +187,7 @@ void humidity_tag_event_handler(bc_tag_humidity_t *self, bc_tag_humidity_event_t
         float celsius;
         if (bc_tag_temperature_get_temperature_celsius(&temperature, &celsius))
         {
-            bc_tag_voc_lp_set_compensation(&tag_voc, &celsius, &value);
+            bc_tag_voc_lp_set_compensation(&tag_voc_lp, &celsius, &value);
         }
     }
 }
@@ -200,12 +200,12 @@ void voc_lp_tag_event_handler(bc_tag_voc_lp_t *self, bc_tag_voc_lp_event_t event
     {
         uint16_t value;
 
-        if (bc_tag_voc_lp_get_tvoc_ppb(&tag_voc, &value))
+        if (bc_tag_voc_lp_get_tvoc_ppb(&tag_voc_lp, &value))
         {
-            if ((fabsf(value - param->value) >= VOC_TAG_PUB_VALUE_CHANGE) || (param->next_pub < bc_scheduler_get_spin_tick()))
+            if ((fabsf(value - param->value) >= VOC_LP_TAG_PUB_VALUE_CHANGE) || (param->next_pub < bc_scheduler_get_spin_tick()))
             {
                 param->value = value;
-                param->next_pub = bc_scheduler_get_spin_tick() + VOC_TAG_PUB_NO_CHANGE_INTERVAL;
+                param->next_pub = bc_scheduler_get_spin_tick() + VOC_LP_TAG_PUB_NO_CHANGE_INTERVAL;
                 int radio_tvoc = value;
                 bc_radio_pub_int("voc-lp-sensor/0:0/tvoc", &radio_tvoc);
             }
@@ -296,9 +296,9 @@ void application_init(void)
     // Initialize thermometer sensor on core module
     bc_tmp112_init(&tmp112, BC_I2C_I2C0, 0x49);
 
-    bc_tag_voc_lp_init(&tag_voc, BC_I2C_I2C0);
-    bc_tag_voc_lp_set_event_handler(&tag_voc, voc_lp_tag_event_handler, &voc_event_param);
-    bc_tag_voc_lp_set_update_interval(&tag_voc, VOC_TAG_UPDATE_INTERVAL);
+    bc_tag_voc_lp_init(&tag_voc_lp, BC_I2C_I2C0);
+    bc_tag_voc_lp_set_event_handler(&tag_voc_lp, voc_lp_tag_event_handler, &voc_lp_event_param);
+    bc_tag_voc_lp_set_update_interval(&tag_voc_lp, VOC_LP_TAG_UPDATE_INTERVAL);
 
     // Initialize button
     bc_button_init(&button, BC_GPIO_BUTTON, BC_GPIO_PULL_DOWN, false);
@@ -312,7 +312,7 @@ void application_init(void)
 
     // Initialize temperature
     temperature_event_param.channel = BC_RADIO_PUB_CHANNEL_R1_I2C0_ADDRESS_DEFAULT;
-    bc_tag_temperature_init(&temperature, BC_I2C_I2C0, BC_TAG_TEMPERATURE_I2C_ADDRESS_DEFAULT);
+    bc_tag_temperature_init(&temperature, BC_I2C_I2C0, BC_TAG_TEMPERATURE_I2C_ADDRESS_ALTERNATE);
     bc_tag_temperature_set_update_interval(&temperature, TEMPERATURE_UPDATE_SERVICE_INTERVAL);
     bc_tag_temperature_set_event_handler(&temperature, temperature_tag_event_handler, &temperature_event_param);
 
