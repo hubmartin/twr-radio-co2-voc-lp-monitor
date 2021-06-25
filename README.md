@@ -2,7 +2,7 @@
 
 # Firmware for HARDWARIO Radio CO2 monitor with VOC-LP
 
-[![Travis](https://img.shields.io/travis/bigclownlabs/bcf-radio-co2-monitor/master.svg)](https://travis-ci.org/bigclownlabs/bcf-radio-co2-monitor)
+[![Travis](https://www.travis-ci.com/hardwario/twr-infra-grid-lcd-mirror.svg?branch=master)](https://www.travis-ci.com/hardwario/twr-infra-grid-lcd-mirror)
 [![Release](https://img.shields.io/github/release/bigclownlabs/bcf-radio-co2-monitor.svg)](https://github.com/bigclownlabs/bcf-radio-co2-monitor/releases)
 [![License](https://img.shields.io/github/license/bigclownlabs/bcf-radio-co2-monitor.svg)](https://github.com/bigclownlabs/bcf-radio-co2-monitor/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/twitter/follow/hardwario_en.svg?style=social&label=Follow)](https://twitter.com/hardwario_en)
